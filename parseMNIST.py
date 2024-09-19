@@ -3,9 +3,12 @@ from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.typing import NDArray
 
 
-def loadMNIST(folder_path:str = ".") -> Tuple[np.ndarray]:
+def loadMNIST(
+    folder_path: str = ".",
+) -> Tuple[NDArray[np.uint8], NDArray[np.uint8], NDArray[np.uint8], NDArray[np.uint8]]:
     """
     Read MNIST data from disk and parse it into arrays. folder_path can be specified if the data is not in the current directory.
 
@@ -24,14 +27,16 @@ def loadMNIST(folder_path:str = ".") -> Tuple[np.ndarray]:
     with open(f"{folder_path}/train-images.idx3-ubyte", "rb") as doc:
         # Read information in first 16 bytes (>IIII meaning 4 unsigned ints in big endian, or MSB first):
         _, size, rows, cols = struct.unpack(">IIII", doc.read(16))
-        trainImages = np.fromfile(doc, dtype=np.uint8) # Read the rest of the file as a 1D array of unsigned bytes
-        trainImages = trainImages.reshape((size, rows, cols)) # Reshape such that first dimension is the number of images
-    
+        trainImages = np.fromfile(doc, dtype=np.uint8)  # Read the rest of the file as a 1D array of unsigned bytes
+        trainImages = trainImages.reshape(
+            (size, rows, cols)
+        )  # Reshape such that first dimension is the number of images
+
     # Read train labels
     with open(f"{folder_path}/train-labels.idx1-ubyte", "rb") as doc:
         _, size = struct.unpack(">II", doc.read(8))
         trainLabels = np.fromfile(doc, dtype=np.uint8)
-    
+
     # Read test images
     with open(f"{folder_path}/t10k-images.idx3-ubyte", "rb") as doc:
         _, size, rows, cols = struct.unpack(">IIII", doc.read(16))
@@ -42,8 +47,9 @@ def loadMNIST(folder_path:str = ".") -> Tuple[np.ndarray]:
     with open(f"{folder_path}/t10k-labels.idx1-ubyte", "rb") as doc:
         _, size = struct.unpack(">II", doc.read(8))
         testLabels = np.fromfile(doc, dtype=np.uint8)
-    
+
     return trainImages, trainLabels, testImages, testLabels
+
 
 def main():
     """
